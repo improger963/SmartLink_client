@@ -1,22 +1,21 @@
 
 import React, { useState, useTransition, useCallback, memo, CSSProperties, useEffect, useMemo } from 'react';
-import { Task, ParallaxInput } from './types.ts';
-import TaskItem from './components/TaskItem.tsx';
-import { CloudIcon, ServerIcon, DollarSignIcon, CodeIcon, SunIcon, InfoIcon, UsersIcon, HelpCircleIcon, SettingsIcon } from './components/icons.tsx';
-import HolographicTooltip from './components/HolographicTooltip.tsx';
-import AdCarousel from './components/AdCarousel.tsx';
-import PromoCarousel, { PromoSlide } from './components/PromoCarousel.tsx';
-import CosmicBackground from './components/CosmicBackground.tsx';
-import Navigation, { View } from './components/Navigation.tsx';
-import PlaceholderView from './components/PlaceholderView.tsx';
-import TactileButton from './components/TactileButton.tsx';
-import { SettingsProvider, useSettings } from './contexts/SettingsContext.tsx';
-import SettingsPanel from './components/SettingsPanel.tsx';
-import { TransitionProvider, useTransitionEffects } from './contexts/TransitionContext.tsx';
-import StartupTransition from './components/StartupTransition.tsx';
-import { PerformanceProvider } from './contexts/PerformanceContext.tsx';
-import AnimatedBalance from './components/AnimatedBalance.tsx';
-import HolographicGrid from './components/HolographicGrid.tsx';
+import { Task, ParallaxInput } from '../types.ts';
+import TaskItem from '../components/TaskItem.tsx';
+import { CloudIcon, ServerIcon, DollarSignIcon, CodeIcon, SunIcon, InfoIcon, UsersIcon, HelpCircleIcon, SettingsIcon } from '../components/icons.tsx';
+import HolographicTooltip from '../components/HolographicTooltip.tsx';
+import AdCarousel from '../components/AdCarousel.tsx';
+import PromoCarousel, { PromoSlide } from '../components/PromoCarousel.tsx';
+import CosmicBackground from '../components/CosmicBackground.tsx';
+import Navigation, { View } from '../components/Navigation.tsx';
+import PlaceholderView from '../components/PlaceholderView.tsx';
+import TactileButton from '../components/TactileButton.tsx';
+import { useSettings } from '../contexts/SettingsContext.tsx';
+import SettingsPanel from '../components/SettingsPanel.tsx';
+import { useTransitionEffects } from '../contexts/TransitionContext.tsx';
+import StartupTransition from '../components/StartupTransition.tsx';
+import AnimatedBalance from '../components/AnimatedBalance.tsx';
+import HolographicGrid from '../components/HolographicGrid.tsx';
 
 
 const tasksData: Task[] = [
@@ -223,7 +222,7 @@ interface MousePos {
   y: number;
 }
 
-const AppContent: React.FC = () => {
+const DashboardPage: React.FC = () => {
     const [activeView, setActiveView] = useState<View>('dashboard');
     const [displayedView, setDisplayedView] = useState<View>(activeView);
     const [isExiting, setIsExiting] = useState(false);
@@ -346,7 +345,7 @@ const AppContent: React.FC = () => {
             <div className="relative z-10 mx-auto page-padding perspective-container pb-24 md:pb-0">
                 <header className="relative col-span-full flex justify-between items-center py-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-primary/20 after:to-transparent">
                     <div className="text-4xl font-extrabold text-white text-shadow-header animate-float-jitter">
-                        <span className="logo-shimmer">SmartLink</span>
+                       {/* This is a sub-header, Main logo is in Sidebar now */}
                     </div>
                      <div className='flex items-center gap-4'>
                         <div className="hidden lg:flex items-center justify-center w-[468px] h-[60px] bg-stone-900/60 border-2 border-dashed border-stone-700/80 rounded-lg">
@@ -414,18 +413,4 @@ const AppContent: React.FC = () => {
     );
 };
 
-
-const App: React.FC = () => {
-    return (
-        <SettingsProvider>
-            <PerformanceProvider>
-                <TransitionProvider>
-                    <AppContent />
-                </TransitionProvider>
-            </PerformanceProvider>
-        </SettingsProvider>
-    );
-};
-
-
-export default App;
+export default DashboardPage;
