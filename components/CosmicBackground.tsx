@@ -1,16 +1,13 @@
-import React, { useRef, useEffect, useMemo, CSSProperties } from 'react';
-import { usePerformance } from '../contexts/PerformanceContext';
 
-interface MousePos {
-  x: number;
-  y: number;
-}
+import React, { useRef, useEffect, useMemo, CSSProperties } from 'react';
+import { usePerformance } from '../contexts/PerformanceContext.tsx';
+import { ParallaxInput } from '../types.ts';
 
 interface CosmicBackgroundProps {
-    mousePos: MousePos;
+    parallaxInput: ParallaxInput;
 }
 
-const CosmicBackground: React.FC<CosmicBackgroundProps> = ({ mousePos }) => {
+const CosmicBackground: React.FC<CosmicBackgroundProps> = ({ parallaxInput }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const { tier } = usePerformance();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -29,21 +26,20 @@ const CosmicBackground: React.FC<CosmicBackgroundProps> = ({ mousePos }) => {
     
     useEffect(() => {
       if (!containerRef.current) return;
-      const { x, y } = mousePos;
-      const halfWidth = window.innerWidth / 2;
-      const halfHeight = window.innerHeight / 2;
+      const { x, y } = parallaxInput;
       
       // Using a CSS variable for depth for consistency with the CSS file
       const depth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--parallax-depth-1'));
       
-      const offsetX = (x - halfWidth) / halfWidth * depth;
-      const offsetY = (y - halfHeight) / halfHeight * depth;
+      // The input is already normalized from -1 to 1.
+      const offsetX = x * depth;
+      const offsetY = y * depth;
       
       // Apply transform to the container, not the canvas, to avoid re-paints.
-      // Negative offset makes it move away from the cursor.
+      // Negative offset makes it move away from the cursor/tilt direction.
       containerRef.current.style.transform = `translate3d(${-offsetX}px, ${-offsetY}px, 0)`;
       
-    }, [mousePos]);
+    }, [parallaxInput]);
 
 
     useEffect(() => {

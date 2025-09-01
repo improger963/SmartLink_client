@@ -1,7 +1,8 @@
+
 import React from 'react';
-import { useSettings } from '../contexts/SettingsContext';
-import { CloseIcon } from './icons';
-import TactileButton from './TactileButton';
+import { useSettings } from '../contexts/SettingsContext.tsx';
+import { CloseIcon } from './icons.tsx';
+import TactileButton from './TactileButton.tsx';
 
 interface SettingsPanelProps {
     isOpen: boolean;

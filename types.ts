@@ -10,3 +10,8 @@ export interface Task {
   meta: string;
   buttonText: string;
 }
+
+export interface ParallaxInput {
+    x: number; // Normalized -1 to 1
+    y: number; // Normalized -1 to 1
+}

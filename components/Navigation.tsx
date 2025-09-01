@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useLayoutEffect } from 'react';
 
 export type View = 'dashboard' | 'my-ads' | 'monitoring' | 'contacts';
@@ -39,7 +40,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeView, onNavigate }) => {
   return (
     <nav 
         ref={navRef}
-        className="relative flex items-center justify-center gap-2 sm:gap-4 p-2 bg-stone-900/80 border border-stone-800 rounded-full max-w-max mx-auto"
+        className="relative flex items-center justify-around md:justify-center gap-1 sm:gap-4 p-2 bg-stone-900/80 border-t md:border border-stone-800 md:rounded-full w-full md:max-w-max md:mx-auto"
     >
       <div 
         className="absolute top-2 bottom-2 bg-stone-700/50 rounded-full transition-all duration-300 ease-in-out"

@@ -1,5 +1,6 @@
+
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { usePerformance } from '../contexts/PerformanceContext';
+import { usePerformance } from '../contexts/PerformanceContext.tsx';
 
 interface HyperspaceEffectProps {
     isActive: boolean;

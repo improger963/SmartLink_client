@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState } from 'react';
-import { Achievement } from '../contexts/TransitionContext';
+import { Achievement } from '../contexts/TransitionContext.tsx';
 
 interface AchievementUnlockedProps {
     achievement: Achievement | null;

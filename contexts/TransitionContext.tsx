@@ -1,15 +1,19 @@
+
 import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
-import HyperspaceEffect from '../components/HyperspaceEffect';
-import AchievementUnlocked from '../components/AchievementUnlocked';
+import HyperspaceEffect from '../components/HyperspaceEffect.tsx';
+import AchievementUnlocked from '../components/AchievementUnlocked.tsx';
 
 export interface Achievement {
     title: string;
     description: string;
 }
 
+type PulseType = 'positive' | 'negative';
+
 interface TransitionContextType {
     triggerHyperspace: () => void;
     triggerAchievement: (achievement: Achievement) => void;
+    triggerPulse: (type: PulseType) => void;
 }
 
 const TransitionContext = createContext<TransitionContextType | undefined>(undefined);
@@ -33,9 +37,17 @@ export const TransitionProvider: React.FC<{ children: ReactNode }> = ({ children
             setActiveAchievement(null);
         }, 4000); // Duration of the achievement screen
     }, [activeAchievement]);
+    
+    const triggerPulse = useCallback((type: PulseType) => {
+        const className = `body-pulse-${type}`;
+        document.body.classList.add(className);
+        setTimeout(() => {
+            document.body.classList.remove(className);
+        }, 800); // Duration of the pulse animation in index.html
+    }, []);
 
     return (
-        <TransitionContext.Provider value={{ triggerHyperspace, triggerAchievement }}>
+        <TransitionContext.Provider value={{ triggerHyperspace, triggerAchievement, triggerPulse }}>
             {children}
             <HyperspaceEffect isActive={isHyperspaceActive} />
             <AchievementUnlocked achievement={activeAchievement} />

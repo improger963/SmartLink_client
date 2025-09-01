@@ -1,13 +1,14 @@
+
 import React, { useState } from 'react';
-import { Task } from '../types';
-import HolographicTooltip from './HolographicTooltip';
-import TactileButton from './TactileButton';
-import { useTransitionEffects } from '../contexts/TransitionContext';
+import { Task } from '../types.ts';
+import HolographicTooltip from './HolographicTooltip.tsx';
+import TactileButton from './TactileButton.tsx';
+import { useTransitionEffects } from '../contexts/TransitionContext.tsx';
 
 
 const TaskItem: React.FC<{ task: Task; className?: string; style?: React.CSSProperties; }> = ({ task, className = '', style }) => {
   const IconComponent = task.icon;
-  const { triggerHyperspace } = useTransitionEffects();
+  const { triggerHyperspace, triggerPulse } = useTransitionEffects();
   const [isCompleting, setIsCompleting] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -25,6 +26,7 @@ const TaskItem: React.FC<{ task: Task; className?: string; style?: React.CSSProp
     e.stopPropagation();
     setIsCompleting(true);
     triggerHyperspace();
+    triggerPulse('positive');
   };
 
   const handleAnimationEnd = (e: React.AnimationEvent<HTMLDivElement>) => {

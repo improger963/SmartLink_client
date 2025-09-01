@@ -1,32 +1,28 @@
-import React, { useEffect, useRef } from 'react';
 
-interface MousePos {
-    x: number;
-    y: number;
-}
+import React, { useEffect, useRef } from 'react';
+import { ParallaxInput } from '../types.ts';
 
 interface HolographicGridProps {
-    mousePos: MousePos;
+    parallaxInput: ParallaxInput;
 }
 
-const HolographicGrid: React.FC<HolographicGridProps> = ({ mousePos }) => {
+const HolographicGrid: React.FC<HolographicGridProps> = ({ parallaxInput }) => {
     const gridRef = useRef<HTMLDivElement>(null);
     
     useEffect(() => {
         if (!gridRef.current) return;
-        const { x, y } = mousePos;
-        const halfWidth = window.innerWidth / 2;
-        const halfHeight = window.innerHeight / 2;
+        const { x, y } = parallaxInput;
         
         // Using a CSS variable for depth for consistency with the CSS file
         const depth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--parallax-depth-3'));
 
-        const offsetX = (x - halfWidth) / halfWidth * depth;
-        const offsetY = (y - halfHeight) / halfHeight * depth;
+        // The input is already normalized from -1 to 1.
+        const offsetX = x * depth;
+        const offsetY = y * depth;
 
         gridRef.current.style.transform = `translate3d(${-offsetX}px, ${-offsetY}px, 0)`;
 
-    }, [mousePos]);
+    }, [parallaxInput]);
 
     return <div 
         id="holographic-grid-layer"

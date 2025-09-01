@@ -1,21 +1,22 @@
-import React, { useState, useTransition, useCallback, memo, CSSProperties } from 'react';
-import { Task } from './types';
-import TaskItem from './components/TaskItem';
-import { CloudIcon, ServerIcon, DollarSignIcon, CodeIcon, SunIcon, InfoIcon, UsersIcon, HelpCircleIcon, SettingsIcon } from './components/icons';
-import HolographicTooltip from './components/HolographicTooltip';
-import AdCarousel from './components/AdCarousel';
-import PromoCarousel, { PromoSlide } from './components/PromoCarousel';
-import CosmicBackground from './components/CosmicBackground';
-import Navigation, { View } from './components/Navigation';
-import PlaceholderView from './components/PlaceholderView';
-import TactileButton from './components/TactileButton';
-import { SettingsProvider, useSettings } from './contexts/SettingsContext';
-import SettingsPanel from './components/SettingsPanel';
-import { TransitionProvider, useTransitionEffects } from './contexts/TransitionContext';
-import StartupTransition from './components/StartupTransition';
-import { PerformanceProvider } from './contexts/PerformanceContext';
-import AnimatedBalance from './components/AnimatedBalance';
-import HolographicGrid from './components/HolographicGrid';
+
+import React, { useState, useTransition, useCallback, memo, CSSProperties, useEffect, useMemo } from 'react';
+import { Task, ParallaxInput } from './types.ts';
+import TaskItem from './components/TaskItem.tsx';
+import { CloudIcon, ServerIcon, DollarSignIcon, CodeIcon, SunIcon, InfoIcon, UsersIcon, HelpCircleIcon, SettingsIcon } from './components/icons.tsx';
+import HolographicTooltip from './components/HolographicTooltip.tsx';
+import AdCarousel from './components/AdCarousel.tsx';
+import PromoCarousel, { PromoSlide } from './components/PromoCarousel.tsx';
+import CosmicBackground from './components/CosmicBackground.tsx';
+import Navigation, { View } from './components/Navigation.tsx';
+import PlaceholderView from './components/PlaceholderView.tsx';
+import TactileButton from './components/TactileButton.tsx';
+import { SettingsProvider, useSettings } from './contexts/SettingsContext.tsx';
+import SettingsPanel from './components/SettingsPanel.tsx';
+import { TransitionProvider, useTransitionEffects } from './contexts/TransitionContext.tsx';
+import StartupTransition from './components/StartupTransition.tsx';
+import { PerformanceProvider } from './contexts/PerformanceContext.tsx';
+import AnimatedBalance from './components/AnimatedBalance.tsx';
+import HolographicGrid from './components/HolographicGrid.tsx';
 
 
 const tasksData: Task[] = [
@@ -94,7 +95,7 @@ const promoSlidesData: PromoSlide[] = [
 
 const usefulLinksData = [
     { icon: InfoIcon, text: 'Новости проекта', href: '#' },
-    { icon: UsersIcon, text: 'Наша группа VK', href: '#', animationClass: 'icon-swing-on-hover' },
+    { icon: UsersIcon, text: 'Наша группа VK', href: '#', animationClass: 'icon-jiggle-on-hover' },
     { icon: HelpCircleIcon, text: 'Техническая поддержка', href: '#' },
     { icon: InfoIcon, text: 'Правила сервиса', href: '#' },
 ];
@@ -229,10 +230,50 @@ const AppContent: React.FC = () => {
     const [isPending, startTransition] = useTransition();
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const { triggerHyperspace } = useTransitionEffects();
-    const [mousePos, setMousePos] = useState<MousePos>({ x: 0, y: 0 });
+    const { setViewTheme } = useSettings();
+
+    // --- Advanced Parallax States ---
+    const [mousePos, setMousePos] = useState<MousePos>({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    const [orientation, setOrientation] = useState<{ beta: number | null; gamma: number | null }>({ beta: null, gamma: null });
+
+    // --- Gyroscope Event Listener ---
+    useEffect(() => {
+        const handleOrientation = (event: DeviceOrientationEvent) => {
+            // event.beta: front-to-back tilt (-180 to 180)
+            // event.gamma: left-to-right tilt (-90 to 90)
+            if (event.beta !== null && event.gamma !== null) {
+                setOrientation({ beta: event.beta, gamma: event.gamma });
+            }
+        };
+        window.addEventListener('deviceorientation', handleOrientation);
+        return () => window.removeEventListener('deviceorientation', handleOrientation);
+    }, []);
+
+    const parallaxInput = useMemo<ParallaxInput>(() => {
+        const hasGyro = orientation.beta !== null && orientation.gamma !== null;
+        const halfWidth = window.innerWidth / 2;
+        const halfHeight = window.innerHeight / 2;
+
+        if (hasGyro) {
+            // Use gyroscope data on mobile
+            // Normalize gamma (-90 to 90) -> (-1 to 1) for x-axis
+            const normalizedX = Math.max(-1, Math.min(1, (orientation.gamma ?? 0) / 45)); 
+            // Normalize beta (-180 to 180) -> (-1 to 1) for y-axis. We'll cap it.
+            const normalizedY = Math.max(-1, Math.min(1, (orientation.beta ?? 90 - 90) / 45)); 
+            return { x: normalizedX, y: normalizedY };
+        } else {
+            // Use mouse data on desktop
+            const normalizedX = (mousePos.x - halfWidth) / halfWidth;
+            const normalizedY = (mousePos.y - halfHeight) / halfHeight;
+            return { x: normalizedX, y: normalizedY };
+        }
+    }, [mousePos, orientation]);
+
 
     const handleNavigate = useCallback((view: View) => {
         if (view === activeView) return;
+        
+        setViewTheme(view); // Context-aware theme change
 
         setIsExiting(true);
         setTimeout(() => {
@@ -242,7 +283,7 @@ const AppContent: React.FC = () => {
                 setIsExiting(false);
             });
         }, 400); // Match animation duration
-    }, [activeView, startTransition]);
+    }, [activeView, startTransition, setViewTheme]);
     
     const handleCloseSettings = useCallback(() => {
         setIsSettingsOpen(false);
@@ -278,10 +319,10 @@ const AppContent: React.FC = () => {
             
             {/* Background & Lighting Layers */}
             <div id="global-light-source" style={{ left: `${mousePos.x}px`, top: `${mousePos.y}px` }} />
-            <CosmicBackground mousePos={mousePos} />
-            <HolographicGrid mousePos={mousePos} />
+            <CosmicBackground parallaxInput={parallaxInput} />
+            <HolographicGrid parallaxInput={parallaxInput} />
             
-            <div className="relative z-10 mx-auto page-padding perspective-container">
+            <div className="relative z-10 mx-auto page-padding perspective-container pb-24 md:pb-0">
                 <header className="col-span-full flex justify-between items-center border-b border-stone-800/50 py-4">
                     <div className="text-4xl font-extrabold text-white text-shadow-header animate-float-jitter">
                         SmartLink
@@ -296,13 +337,14 @@ const AppContent: React.FC = () => {
                              className="group p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
                              aria-label="Открыть настройки интерфейса"
                            >
-                               <SettingsIcon className="w-6 h-6 icon-rotate-on-hover" />
+                               <SettingsIcon className="w-6 h-6 icon-jiggle-on-hover" />
                            </button>
                         </HolographicTooltip>
                     </div>
                 </header>
 
-                <div className="w-full my-6 animate-fade-in-up" style={{ animationDelay: '50ms' }}>
+                {/* Desktop Navigation */}
+                <div className="hidden md:block w-full my-6 animate-fade-in-up" style={{ animationDelay: '50ms' }}>
                    <Navigation activeView={activeView} onNavigate={handleNavigate} />
                 </div>
                 
@@ -336,6 +378,12 @@ const AppContent: React.FC = () => {
                     Copyright © 2024. Все права защищены.
                 </footer>
             </div>
+
+            {/* Mobile Navigation */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-20 animate-fade-in-up" style={{ animationDelay: '50ms' }}>
+                <Navigation activeView={activeView} onNavigate={handleNavigate} />
+            </div>
+
             <SettingsPanel isOpen={isSettingsOpen} onClose={handleCloseSettings} />
         </div>
     );

@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import HolographicTooltip from './HolographicTooltip';
-import TactileButton from './TactileButton';
+import HolographicTooltip from './HolographicTooltip.tsx';
+import TactileButton from './TactileButton.tsx';
 
 export interface PromoSlide {
   title: string;
