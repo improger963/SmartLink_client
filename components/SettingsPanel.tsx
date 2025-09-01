@@ -57,7 +57,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
                 <div className="space-y-6">
                     {sliders.map(({ id, label, minLabel, maxLabel }) => (
                         <div key={id}>
-                            <label htmlFor={id} className="block text-sm font-medium text-stone-300 mb-2">{label}</label>
+                            <div className="flex justify-between items-center mb-2">
+                               <label htmlFor={id} className="block text-sm font-medium text-stone-300">{label}</label>
+                               <span className="text-xs font-mono text-stone-400 bg-stone-900/50 px-2 py-0.5 rounded">{settings[id]}</span>
+                            </div>
                             <input
                                 type="range"
                                 id={id}

@@ -8,7 +8,7 @@ import { useTransitionEffects } from '../contexts/TransitionContext.tsx';
 
 const TaskItem: React.FC<{ task: Task; className?: string; style?: React.CSSProperties; }> = ({ task, className = '', style }) => {
   const IconComponent = task.icon;
-  const { triggerHyperspace, triggerPulse } = useTransitionEffects();
+  const { triggerHyperspace, triggerPulse, triggerBalanceUpdate } = useTransitionEffects();
   const [isCompleting, setIsCompleting] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -25,6 +25,7 @@ const TaskItem: React.FC<{ task: Task; className?: string; style?: React.CSSProp
     // Prevent the main button from also triggering the ripple on the parent
     e.stopPropagation();
     setIsCompleting(true);
+    triggerBalanceUpdate(7.50); // Simulate earning
     triggerHyperspace();
     triggerPulse('positive');
   };
@@ -44,10 +45,10 @@ const TaskItem: React.FC<{ task: Task; className?: string; style?: React.CSSProp
         onAnimationEnd={handleAnimationEnd}
     >
       <div className="flex items-center flex-grow mb-4 sm:mb-0 sm:mr-4">
-        <div className={`w-10 h-10 mr-4 sm:mr-6 shrink-0 flex items-center justify-center rounded-lg ${task.iconBgColorClass}`}>
+        <div className={`w-10 h-10 mr-4 sm:mr-6 shrink-0 flex items-center justify-center rounded-lg ${task.iconBgColorClass} task-item-lift`}>
           <IconComponent className={`w-6 h-6 ${task.iconColorClass}`} />
         </div>
-        <div className="flex-grow">
+        <div className="flex-grow task-item-lift" style={{ transitionDelay: '50ms' }}>
           <div className="font-semibold text-base sm:text-lg text-stone-100 transition-all duration-300 group-hover:text-white group-hover:[text-shadow:0_0_8px_rgba(255,255,255,0.3)]">{task.title}</div>
           <div className="text-sm text-stone-400">{task.meta}</div>
         </div>

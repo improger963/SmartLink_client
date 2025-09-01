@@ -14,6 +14,8 @@ interface TransitionContextType {
     triggerHyperspace: () => void;
     triggerAchievement: (achievement: Achievement) => void;
     triggerPulse: (type: PulseType) => void;
+    triggerBalanceUpdate: (amount: number) => void;
+    balanceUpdate: { key: number; amount: number };
 }
 
 const TransitionContext = createContext<TransitionContextType | undefined>(undefined);
@@ -21,6 +23,7 @@ const TransitionContext = createContext<TransitionContextType | undefined>(undef
 export const TransitionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [isHyperspaceActive, setIsHyperspaceActive] = useState(false);
     const [activeAchievement, setActiveAchievement] = useState<Achievement | null>(null);
+    const [balanceUpdate, setBalanceUpdate] = useState({ key: 0, amount: 0 });
 
     const triggerHyperspace = useCallback(() => {
         if (isHyperspaceActive) return;
@@ -46,8 +49,14 @@ export const TransitionProvider: React.FC<{ children: ReactNode }> = ({ children
         }, 800); // Duration of the pulse animation in index.html
     }, []);
 
+    const triggerBalanceUpdate = useCallback((amount: number) => {
+        if (amount > 0) {
+            setBalanceUpdate(prev => ({ key: prev.key + 1, amount }));
+        }
+    }, []);
+
     return (
-        <TransitionContext.Provider value={{ triggerHyperspace, triggerAchievement, triggerPulse }}>
+        <TransitionContext.Provider value={{ triggerHyperspace, triggerAchievement, triggerPulse, triggerBalanceUpdate, balanceUpdate }}>
             {children}
             <HyperspaceEffect isActive={isHyperspaceActive} />
             <AchievementUnlocked achievement={activeAchievement} />

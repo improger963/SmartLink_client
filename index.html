@@ -116,39 +116,35 @@
       }
       
       /* --- Page Transitions (Macro-animation) --- */
-      @keyframes view-enter {
+      @keyframes view-enter-dissolve {
         from {
-            opacity: 0;
-            transform: scale(0.98) translateY(-10px) rotateX(5deg);
-            transform-origin: top center;
+          opacity: 0;
+          clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
         }
         to {
-            opacity: 1;
-            transform: scale(1) translateY(0) rotateX(0deg);
-            transform-origin: top center;
+          opacity: 1;
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
         }
       }
 
-      @keyframes view-exit {
+      @keyframes view-exit-dissolve {
         from {
             opacity: 1;
-            transform: scale(1) translateY(0) rotateX(0deg);
-            transform-origin: top center;
+            transform: scale(1);
         }
         to {
             opacity: 0;
-            transform: scale(0.98) translateY(10px) rotateX(-5deg);
-            transform-origin: top center;
+            transform: scale(0.98);
         }
       }
 
       .view-container.entering {
-        animation: view-enter var(--duration-medium) ease-out forwards;
-        will-change: transform, opacity;
+        animation: view-enter-dissolve var(--duration-slow) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        will-change: opacity, clip-path;
       }
 
       .view-container.exiting {
-        animation: view-exit var(--duration-medium) ease-out forwards;
+        animation: view-exit-dissolve var(--duration-medium) ease-out forwards;
         will-change: transform, opacity;
       }
 
@@ -195,6 +191,10 @@
       .interactive-card:hover {
         transform: translateY(-8px) translateZ(var(--spatial-z-px)) rotateX(-6deg);
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, var(--spatial-shadow-opacity));
+      }
+      .group:hover .task-item-lift {
+        transform: translateY(-2px);
+        transition: transform 0.3s ease;
       }
 
       /* Micro-animation: Card Glint */
@@ -360,6 +360,20 @@
         display: inline-block; /* Required for transform */
         animation: float-jitter 8s ease-in-out infinite;
       }
+      
+      @keyframes shimmer {
+        0% { background-position: -500px 0; }
+        100% { background-position: 500px 0; }
+      }
+      .logo-shimmer {
+          position: relative;
+          background: linear-gradient(to right, currentColor 20%, oklch(98% 0.01 var(--primary-h)) 40%, oklch(98% 0.01 var(--primary-h)) 60%, currentColor 80%);
+          background-size: 200% auto;
+          color: transparent;
+          background-clip: text;
+          -webkit-background-clip: text;
+          animation: shimmer 10s linear infinite;
+      }
 
       /* --- Promo Banner --- */
       .promo-banner {
@@ -434,7 +448,7 @@
         border: 2px solid var(--color-primary);
         border-radius: 50%;
         cursor: pointer;
-        transition: background .2s, box-shadow .2s;
+        transition: background .2s, box-shadow .2s, transform .1s ease;
       }
       input[type="range"].settings-slider::-moz-range-thumb {
         width: 18px;
@@ -443,7 +457,7 @@
         border: 2px solid var(--color-primary);
         border-radius: 50%;
         cursor: pointer;
-        transition: background .2s, box-shadow .2s;
+        transition: background .2s, box-shadow .2s, transform .1s ease;
       }
       input[type="range"].settings-slider:hover::-webkit-slider-thumb {
         background: white;
@@ -452,6 +466,16 @@
       input[type="range"].settings-slider:hover::-moz-range-thumb {
         background: white;
         box-shadow: 0 0 10px var(--color-primary-shadow);
+      }
+      input[type="range"].settings-slider:active::-webkit-slider-thumb {
+        background: white;
+        box-shadow: 0 0 15px var(--color-primary-shadow-strong);
+        transform: scale(1.1);
+      }
+      input[type="range"].settings-slider:active::-moz-range-thumb {
+        background: white;
+        box-shadow: 0 0 15px var(--color-primary-shadow-strong);
+        transform: scale(1.1);
       }
       
       /* --- Startup Transition --- */
@@ -652,6 +676,18 @@
         animation: task-complete var(--duration-slow) ease-out forwards;
       }
       
+      /* Special Effect: Balance Glitch */
+      @keyframes balance-glitch {
+        0%, 100% { transform: translate(0, 0); text-shadow: var(--original-text-shadow); }
+        10% { transform: translate(-2px, 2px); text-shadow: 2px 0 red, -2px 0 cyan; }
+        20% { transform: translate(2px, -2px); text-shadow: -2px 0 red, 2px 0 cyan; }
+        30% { transform: translate(0, 0); text-shadow: var(--original-text-shadow); }
+      }
+      .balance-glitch-active {
+          --original-text-shadow: 0 1px 0 hsl(0 0% 10% / 0.8), 0 0 20px var(--color-primary-shadow-strong);
+          animation: balance-glitch 0.3s steps(2, end);
+      }
+
       /* Special Effect: Red Alert Theme Transition */
       @keyframes red-alert-flash {
         0% { opacity: 0; }
@@ -676,6 +712,21 @@
       }
       .animate-settings-panel-enter {
         animation: settings-panel-enter var(--duration-medium) cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      
+      /* System Status Indicator */
+      @keyframes status-indicator-blink {
+        50% { opacity: 0.3; }
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #4ade80; /* A pleasant green */
+        margin-right: 8px;
+        animation: status-indicator-blink 2s infinite;
+        box-shadow: 0 0 5px #4ade80;
       }
 
     </style>

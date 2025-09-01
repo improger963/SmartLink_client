@@ -236,6 +236,27 @@ const AppContent: React.FC = () => {
     const [mousePos, setMousePos] = useState<MousePos>({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
     const [orientation, setOrientation] = useState<{ beta: number | null; gamma: number | null }>({ beta: null, gamma: null });
 
+    // --- System Status State ---
+    const [statusText, setStatusText] = useState('All systems nominal.');
+    const statusMessages = useMemo(() => [
+        'All systems nominal.',
+        'Quantum link stable.',
+        'Data stream optimal.',
+        'Awaiting user input.',
+        'Heuristics matrix aligned.',
+    ], []);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setStatusText(prev => {
+                const currentIndex = statusMessages.indexOf(prev);
+                const nextIndex = (currentIndex + 1) % statusMessages.length;
+                return statusMessages[nextIndex];
+            });
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [statusMessages]);
+
     // --- Gyroscope Event Listener ---
     useEffect(() => {
         const handleOrientation = (event: DeviceOrientationEvent) => {
@@ -323,9 +344,9 @@ const AppContent: React.FC = () => {
             <HolographicGrid parallaxInput={parallaxInput} />
             
             <div className="relative z-10 mx-auto page-padding perspective-container pb-24 md:pb-0">
-                <header className="col-span-full flex justify-between items-center border-b border-stone-800/50 py-4">
+                <header className="relative col-span-full flex justify-between items-center py-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-primary/20 after:to-transparent">
                     <div className="text-4xl font-extrabold text-white text-shadow-header animate-float-jitter">
-                        SmartLink
+                        <span className="logo-shimmer">SmartLink</span>
                     </div>
                      <div className='flex items-center gap-4'>
                         <div className="hidden lg:flex items-center justify-center w-[468px] h-[60px] bg-stone-900/60 border-2 border-dashed border-stone-700/80 rounded-lg">
@@ -374,8 +395,12 @@ const AppContent: React.FC = () => {
                     {renderView()}
                 </div>
 
-                <footer className="col-span-full text-center text-stone-400 text-sm pt-6 mt-8 border-t border-stone-800/50">
-                    Copyright © 2024. Все права защищены.
+                <footer className="col-span-full flex justify-between items-center text-stone-400 text-sm pt-6 mt-8 border-t border-stone-800/50">
+                    <div>Copyright © 2024. Все права защищены.</div>
+                    <div className="hidden md:flex items-center">
+                        <span className="status-indicator"></span>
+                        <span key={statusText} className="animate-fade-in text-stone-500 font-mono text-xs">{statusText}</span>
+                    </div>
                 </footer>
             </div>
 
