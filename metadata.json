@@ -1,0 +1,5 @@
+{
+  "name": "SmartLink Dashboard",
+  "description": "A futuristic dashboard interface for managing tasks and viewing account status, built with React and Tailwind CSS.",
+  "requestFramePermissions": []
+}
